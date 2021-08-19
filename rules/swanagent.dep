@@ -1,0 +1,9 @@
+
+SPATH       := $($(SWANAGENT)_SRC_PATH)
+DEP_FILES   := $(SONIC_COMMON_FILES_LIST) rules/swanagent.mk rules/swanagent.dep
+DEP_FILES   += $(SONIC_COMMON_BASE_FILES_LIST)
+SMDEP_FILES := $(addprefix $(SPATH)/,$(shell cd $(SPATH) && git ls-files))
+
+$(SWANAGENT)_CACHE_MODE  := GIT_CONTENT_SHA
+$(SWANAGENT)_DEP_FLAGS   := $(SONIC_COMMON_FLAGS_LIST)
+$(SWANAGENT)_DEP_FILES   := $(DEP_FILES)

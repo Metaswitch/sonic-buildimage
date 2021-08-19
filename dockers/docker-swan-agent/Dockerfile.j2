@@ -1,0 +1,52 @@
+FROM docker-config-engine-buster
+
+ARG docker_container_name
+RUN [ -f /etc/rsyslog.conf ] && sed -ri "s/%syslogtag%/$docker_container_name#%syslogtag%/;" /etc/rsyslog.conf
+
+# Make apt-get non-interactive
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Add other repositories
+RUN echo 'deb http://security.debian.org/debian-security jessie/updates main' >> /etc/apt/sources.list
+
+# Update apt's cache of available packages
+RUN apt-get update
+
+# Install dependencies
+RUN apt-get install libpcap-dev -y
+
+# Dependencies for python-swss-common gRPC server.
+RUN pip3 install grpcio-tools==1.29.0
+
+
+{% if docker_swan_agent_debs.strip() -%}
+# Copy locally-built Debian package dependencies
+{%- for deb in docker_swan_agent_debs.split(' ') %}
+COPY debs/{{ deb }} /debs/
+{%- endfor %}
+
+# Install locally-built Debian packages and implicitly install their dependencies
+{%- for deb in docker_swan_agent_debs.split(' ') %}
+RUN dpkg_apt() { [ -f $1 ] && { dpkg -i $1 || apt-get -y install -f; } || return 1; }; dpkg_apt /debs/{{ deb }}
+{%- endfor %}
+{%- endif %}
+
+# Clean up
+RUN apt-get clean -y
+RUN apt-get autoclean -y
+RUN apt-get autoremove -y
+RUN rm -rf /debs ~/.cache
+
+EXPOSE 16485 42000 42001
+
+COPY ["start.sh", "/usr/bin/"]
+COPY ["supervisord.conf", "/etc/supervisor/conf.d/"]
+COPY ["*.j2", "/usr/share/sonic/templates/"]
+COPY ["files/supervisor-proc-exit-listener", "/usr/bin"]
+COPY ["critical_processes", "/etc/supervisor"]
+COPY ["redis_pb2_grpc.py", "/usr/bin"]
+COPY ["redis_pb2.py", "/usr/bin"]
+COPY ["server.py", "/usr/bin"]
+
+
+ENTRYPOINT ["/usr/local/bin/supervisord"]
