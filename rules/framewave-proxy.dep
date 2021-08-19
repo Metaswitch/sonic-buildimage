@@ -1,0 +1,10 @@
+
+SPATH       := $($(FRAMEWAVE_PROXY)_SRC_PATH)
+DEP_FILES   := $(SONIC_COMMON_FILES_LIST) rules/framewave-proxy.mk rules/framewave-proxy.dep
+DEP_FILES   += $(SONIC_COMMON_BASE_FILES_LIST)
+SMDEP_FILES := $(addprefix $(SPATH)/,$(shell cd $(SPATH) && git ls-files))
+
+$(FRAMEWAVE_PROXY)_CACHE_MODE  := GIT_CONTENT_SHA
+$(FRAMEWAVE_PROXY)_DEP_FLAGS   := $(SONIC_COMMON_FLAGS_LIST)
+$(FRAMEWAVE_PROXY)_DEP_FILES   := $(DEP_FILES)
+
