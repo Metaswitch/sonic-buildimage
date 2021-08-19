@@ -27,6 +27,9 @@ Environment=sonic_asic_platform={{ sonic_asic_platform }}
 ExecStartPre=/usr/local/bin/syncd.sh start{% if multi_instance == 'true' %} %i{% endif %}
 ExecStart=/usr/local/bin/syncd.sh wait{% if multi_instance == 'true' %} %i{% endif %}
 ExecStop=/usr/local/bin/syncd.sh stop{% if multi_instance == 'true' %} %i{% endif %}
+{% if sonic_asic_platform == 'soda' %}
+ExecStopPost=/usr/local/bin/package_logs {{docker_container_name}}{% if multi_instance == 'true' %} %i{% endif %}
+{% endif %}
 {% if sonic_asic_platform == 'mellanox' %}
 TimeoutStartSec=480
 {% endif %}
