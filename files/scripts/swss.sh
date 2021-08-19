@@ -1,6 +1,5 @@
 #!/bin/bash
 
-DEV=$2
 
 SERVICE="swss"
 PEER="syncd"
@@ -10,7 +9,12 @@ NAMESPACE_PREFIX="asic"
 ETC_SONIC_PATH="/etc/sonic/"
 
 DEPENDENT="radv"
-MULTI_INST_DEPENDENT="teamd"
+MULTI_INST_DEPENDENT=""
+ROUTING_STACK="$(/usr/local/bin/sonic-cfggen -y /etc/sonic/sonic_version.yml -v routing_stack)"
+
+if [[ "$ROUTING_STACK" != "framewave" ]]; then
+    MULTI_INST_DEPENDENT="teamd"
+fi
 
 . /usr/local/bin/asic_status.sh
 
