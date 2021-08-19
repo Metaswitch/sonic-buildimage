@@ -601,6 +601,9 @@ sudo LANG=C chroot $FILESYSTEM_ROOT systemctl enable http-server.service
 # Copy SNMP configuration files
 sudo cp $IMAGE_CONFIGS/snmp/snmp.yml $FILESYSTEM_ROOT/etc/sonic/
 
+# Copy SWAN configuration files
+sudo cp $IMAGE_CONFIGS/swan/config.json $FILESYSTEM_ROOT/etc/sonic/
+
 # Copy ASN configuration files
 sudo cp $IMAGE_CONFIGS/constants/constants.yml $FILESYSTEM_ROOT/etc/sonic/
 
