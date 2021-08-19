@@ -1,0 +1,50 @@
+{% from "dockers/dockerfile-macros.j2" import install_debian_packages, install_python_wheels, copy_files %}
+FROM docker-config-engine-buster
+
+ARG docker_container_name
+RUN [ -f /etc/rsyslog.conf ] && sed -ri "s/%syslogtag%/$docker_container_name#%syslogtag%/;" /etc/rsyslog.conf
+
+# Copy files across
+COPY ["start.sh", "/usr/bin/"]
+COPY ["supervisord.conf", "/etc/supervisor/conf.d/"]
+COPY ["*.j2", "/usr/share/sonic/templates/"]
+COPY ["files/supervisor-proc-exit-listener", "/usr/bin"]
+COPY ["critical_processes", "/etc/supervisor"]
+
+# Make apt-get non-interactive
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Add other repositories
+RUN echo 'deb http://security.debian.org/debian-security jessie/updates main' >> /etc/apt/sources.list
+
+# this is needed in order to install default-jre without errors as man does not exist in the container
+RUN mkdir /usr/share/man/man1/
+
+# Update apt's cache of available packages and install the required packages
+RUN apt-get update && \
+    apt-get install -y \
+    default-jre \
+    libboost1.71-dev \
+    libboost-program-options1.71-dev \
+    libboost-system1.71-dev \
+    libboost-thread1.71-dev \
+    libboost-log1.71-dev \
+    libjson-c-dev \
+    ssh \
+    gdb
+
+{% if docker_fpm_framewave_debs.strip() -%}
+# Copy locally-built Debian package dependencies
+{{ copy_files("debs/", docker_fpm_framewave_debs.split(' '), "/debs/") }}
+
+# Install locally-built Debian packages and implicitly install their dependencies
+{{ install_debian_packages(docker_fpm_framewave_debs.split(' ')) }}
+{%- endif %}
+
+# Clean up
+RUN apt-get clean -y && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    rm -rf /debs ~/.cache
+
+ENTRYPOINT ["/usr/local/bin/supervisord"]
