@@ -7,6 +7,9 @@
 .screen
 rules/config.user
 
+# IDE related
+.idea/
+
 # Build artifacts
 fsroot/
 fs.*
