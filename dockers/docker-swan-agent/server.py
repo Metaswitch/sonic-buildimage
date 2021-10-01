@@ -15,7 +15,7 @@ from redis_pb2_grpc import RedisTableServicer, RedisTableServicer, add_RedisTabl
 
 class RedisTableServer(RedisTableServicer):
     """
-    Endpoint server for swss-common redis interaction gRPC service. 
+    Endpoint server for swss-common redis interaction gRPC service.
     """
     def __init__(self, redis_socket_address, db_index):
         self.appl_db_connection = swsscommon.DBConnector(
@@ -24,8 +24,8 @@ class RedisTableServer(RedisTableServicer):
             0
         )
         self.ps_tables = {
-            "NEXT_HOP_GROUP_TABLE" : swsscommon.ProducerStateTable(
-                self.appl_db_connection, "NEXT_HOP_GROUP_TABLE"
+            "NEXTHOP_GROUP_TABLE" : swsscommon.ProducerStateTable(
+                self.appl_db_connection, "NEXTHOP_GROUP_TABLE"
             ),
             "ROUTE_TABLE" : swsscommon.ProducerStateTable(
                 self.appl_db_connection, "ROUTE_TABLE"
@@ -43,7 +43,7 @@ class RedisTableServer(RedisTableServicer):
             ),
         }
         self.redis_client = redis.Redis(host="localhost", port=6379, db=0)
-        
+
     def Set(self, request, context):
         """
         Set invokes the swss-common set command for creating/updating a table
@@ -72,13 +72,13 @@ class RedisTableServer(RedisTableServicer):
         table = self.ps_tables[request.table]
         table.delete(request.key)
         logging.info(f"Successfully deleted {request.key} from APPL_DB.")
-        resp = RedisTableResponse(success=True) 
+        resp = RedisTableResponse(success=True)
         return resp
 
     def Get(self, request, context):
         """
         Get invokes the swss-common get command for retrieving field-value pairs
-        associated with a particular key from redis. 
+        associated with a particular key from redis.
         """
         logging.info(f"Received get request for key {request.key}.")
         if request.table not in self.gt_tables:
@@ -99,7 +99,7 @@ class RedisTableServer(RedisTableServicer):
         )
         return resp
 
-        
+
     def Ping(self, request, context):
         """
         Ping pings redis to assert that redis is still up. This currently acts
@@ -127,7 +127,7 @@ class RedisTableServer(RedisTableServicer):
         swan_keys = {k for k in swan_keys if not k.startswith("_")}
         swan_json = {key : FieldValuePairMap(fvPairs=value["value"]) for key, value in appl_db_json.items() if key in swan_keys}
         return swan_json
-    
+
     def WarmRestart(self, request, context):
         """
         WarmRestart checks APPL_DB to see if there are any keys programmed by
@@ -139,7 +139,7 @@ class RedisTableServer(RedisTableServicer):
             return RedisTableWarmRestartResponse(warmRestart=False)
         # SWAN entries found in APPL_DB.
         return RedisTableWarmRestartResponse(warmRestart=True, swanRedisData=swan_data)
-        
+
 
 
 
@@ -150,10 +150,10 @@ if __name__ == '__main__':
         level=logging.INFO,
         format='%(asctime)s - SWAN gRPC Endpoint - %(levelname)s - %(message)s',
     )
-    
+
     # Instantiate a grpc server.
     server = grpc.server(ThreadPoolExecutor())
-    
+
     # Register our endpoint implementation with the gRPC server.
     add_RedisTableServicer_to_server(
         RedisTableServer(
@@ -161,7 +161,7 @@ if __name__ == '__main__':
             db_index=0),
             server,
     )
-    
+
     # Start the server.
     port = 9999
     server.add_insecure_port(f'[::]:{port}')
