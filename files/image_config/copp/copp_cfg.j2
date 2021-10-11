@@ -13,7 +13,7 @@
 		    "trap_priority":"4",
 		    "queue": "4"
 	    },
-	    "queue4_group2": {            
+	    "queue4_group2": {
 		    "trap_action":"copy",
 		    "trap_priority":"4",
 		    "queue": "4",
@@ -102,6 +102,10 @@
 	    "sflow": {
 		    "trap_group": "queue2_group1",
 		    "trap_ids": "sample_packet"
+	    },
+	    "isis": {
+		    "trap_ids": "isis",
+		    "trap_group": "queue4_group1"
 	    }
     }
 }
