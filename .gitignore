@@ -9,6 +9,7 @@ rules/config.user
 
 # IDE related
 .idea/
+.vscode/
 
 # Build artifacts
 fsroot/
