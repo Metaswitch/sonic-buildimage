@@ -4,6 +4,7 @@ Requires=database{% if multi_instance == 'true' %}@%i{% endif %}.service
 After=database{% if multi_instance == 'true' %}@%i{% endif %}.service
 Requires=updategraph.service
 After=updategraph.service
+After=swss.service
 BindsTo=sonic.target
 After=sonic.target
 Before=ntp-config.service
