@@ -36,6 +36,9 @@ class RedisTableServer(RedisTableServicer):
             "CLASS_BASED_NEXT_HOP_GROUP_TABLE" : swsscommon.ProducerStateTable(
                 self.appl_db_connection,"CLASS_BASED_NEXT_HOP_GROUP_TABLE"
             ),
+            "FC_TO_NHG_INDEX_MAP_TABLE" : swsscommon.ProducerStateTable(
+                self.appl_db_connection, "FC_TO_NHG_INDEX_MAP_TABLE"
+            ),
         }
         self.gt_tables = {
             "NEIGH_TABLE" : swsscommon.Table(
