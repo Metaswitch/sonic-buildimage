@@ -2,6 +2,9 @@
 Description=SWAN Agent Container
 Requires=database{% if multi_instance == 'true' %}@%i{% endif %}.service
 After=database{% if multi_instance == 'true' %}@%i{% endif %}.service
+After=swss.service
+BindsTo=sonic.target
+After=sonic.target
 StartLimitIntervalSec=1200
 StartLimitBurst=3
 
@@ -15,4 +18,4 @@ Restart=always
 RestartSec=30
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=sonic.target
