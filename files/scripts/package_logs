@@ -38,7 +38,7 @@ case "$1" in
         ;&        
     syncd)
         package
-        usr/local/bin/generate_dump -t 5
+        sudo usr/local/bin/generate_dump -t 5
         ;;
     
     *)
