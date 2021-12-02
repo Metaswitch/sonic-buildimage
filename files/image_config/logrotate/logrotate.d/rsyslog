@@ -34,7 +34,7 @@
 /var/log/swss/swss*.rec
 {
     size 1M
-    rotate 5000
+    rotate 100
     missingok
     notifempty
     compress
