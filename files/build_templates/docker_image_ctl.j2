@@ -105,8 +105,6 @@ function preStartAction()
     fi   
 {%- elif docker_container_name == "snmp" %}
     $SONIC_DB_CLI STATE_DB HSET 'DEVICE_METADATA|localhost' chassis_serial_number $(decode-syseeprom -s)
-{%- elif docker_container_name == "framewave-proxy" %}
-    /sbin/ebtables --flush FORWARD
 {%- else %}
     : # nothing
 {%- endif %}
