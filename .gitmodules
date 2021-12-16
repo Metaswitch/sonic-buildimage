@@ -94,6 +94,9 @@
 [submodule "platform/broadcom/sonic-platform-modules-nokia"]
 	path = platform/broadcom/sonic-platform-modules-nokia
 	url = https://github.com/nokia/sonic-platform.git
+[submodule "src/linkmgrd"]
+	path = src/linkmgrd
+	url = https://github.com/Azure/sonic-linkmgrd.git
 [submodule "src/framewave"]
 	path = src/framewave
 	url = git@git.datcon.co.uk:nst/icp.git
