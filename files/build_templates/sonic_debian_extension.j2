@@ -143,6 +143,12 @@ sudo https_proxy=$https_proxy LANG=C chroot $FILESYSTEM_ROOT pip3 install psutil
 sudo https_proxy=$https_proxy LANG=C chroot $FILESYSTEM_ROOT pip2 install ipaddr
 sudo https_proxy=$https_proxy LANG=C chroot $FILESYSTEM_ROOT pip3 install ipaddr
 
+# Install Python module for grpcio and grpcio-toole
+sudo https_proxy=$https_proxy LANG=C chroot $FILESYSTEM_ROOT pip install "grpcio==1.39.0"
+sudo https_proxy=$https_proxy LANG=C chroot $FILESYSTEM_ROOT pip install "grpcio-tools==1.39.0"
+sudo https_proxy=$https_proxy LANG=C chroot $FILESYSTEM_ROOT pip3 install "grpcio==1.39.0"
+sudo https_proxy=$https_proxy LANG=C chroot $FILESYSTEM_ROOT pip3 install "grpcio-tools==1.39.0"
+
 # Install SwSS SDK Python 3 package
 # Note: the scripts will be overwritten by corresponding Python 2 package
 SWSSSDK_PY3_WHEEL_NAME=$(basename {{swsssdk_py3_wheel_path}})
@@ -265,6 +271,10 @@ sudo rm -rf $FILESYSTEM_ROOT/$SONIC_UTILITIES_PY3_WHEEL_NAME
 sudo dpkg --root=$FILESYSTEM_ROOT -i $debs_path/sonic-utilities-data_*.deb || \
     sudo LANG=C DEBIAN_FRONTEND=noninteractive chroot $FILESYSTEM_ROOT apt-get -y install -f
 
+# Install customized bash version to patch bash plugin support.
+sudo dpkg --root=$FILESYSTEM_ROOT -i target/debs/bash_*.deb || \
+    sudo LANG=C DEBIAN_FRONTEND=noninteractive chroot $FILESYSTEM_ROOT apt-get -y install -f
+
 # sonic-utilities-data installs bash-completion as a dependency. However, it is disabled by default
 # in bash.bashrc, so we copy a version of the file with it enabled here.
 sudo cp -f $IMAGE_CONFIGS/bash/bash.bashrc $FILESYSTEM_ROOT/etc/
@@ -380,6 +390,14 @@ echo "ntp.service" | sudo tee -a $GENERATED_SERVICE_FILE
 sudo LANG=C cp $IMAGE_CONFIGS/warmboot-finalizer/finalize-warmboot.sh $FILESYSTEM_ROOT/usr/local/bin/finalize-warmboot.sh
 sudo LANG=C cp $IMAGE_CONFIGS/warmboot-finalizer/warmboot-finalizer.service $FILESYSTEM_ROOT_USR_LIB_SYSTEMD_SYSTEM
 echo "warmboot-finalizer.service" | sudo tee -a $GENERATED_SERVICE_FILE
+sudo LANG=C chroot $FILESYSTEM_ROOT systemctl enable warmboot-finalizer.service
+
+# Copy sysmonitor files
+sudo LANG=C cp $IMAGE_CONFIGS/sysmonitor/sysmonitor.py $FILESYSTEM_ROOT/usr/local/bin/sysmonitor.py
+sudo LANG=C cp $IMAGE_CONFIGS/sysmonitor/sysmonitor.service $FILESYSTEM_ROOT_USR_LIB_SYSTEMD_SYSTEM
+echo "sysmonitor.service" | sudo tee -a $GENERATED_SERVICE_FILE
+sudo LANG=C chroot $FILESYSTEM_ROOT systemctl enable sysmonitor.service
+
 
 # Copy watchdog-control files
 sudo LANG=C cp $IMAGE_CONFIGS/watchdog-control/watchdog-control.sh $FILESYSTEM_ROOT/usr/local/bin/watchdog-control.sh
@@ -811,6 +829,12 @@ sudo LANG=C cp $SCRIPTS_DIR/asic_status.py $FILESYSTEM_ROOT/usr/local/bin/asic_s
 
 # Copy sonic-netns-exec script
 sudo LANG=C cp $SCRIPTS_DIR/sonic-netns-exec $FILESYSTEM_ROOT/usr/bin/sonic-netns-exec
+
+# Copy write_standby script for mux state
+sudo LANG=C cp $SCRIPTS_DIR/write_standby.py $FILESYSTEM_ROOT/usr/local/bin/write_standby.py
+
+# Copy mark_dhcp_packet script
+sudo LANG=C cp $SCRIPTS_DIR/mark_dhcp_packet.py $FILESYSTEM_ROOT/usr/local/bin/mark_dhcp_packet.py
 
 # Copy package_logs script
 sudo LANG=C cp $SCRIPTS_DIR/package_logs $FILESYSTEM_ROOT/usr/local/bin/package_logs
