@@ -26,6 +26,11 @@ DEFAULT_NAMESPACE = ''
 PORT_ROLE = 'role'
 
 
+
+# Dictionary to cache config_db connection handle per namespace
+# to prevent duplicate connections from being opened
+config_db_handle = {}
+
 def connect_config_db_for_ns(namespace=DEFAULT_NAMESPACE):
     """
     The function connects to the config DB for a given namespace and
@@ -46,9 +51,9 @@ def connect_config_db_for_ns(namespace=DEFAULT_NAMESPACE):
 def connect_to_all_dbs_for_ns(namespace=DEFAULT_NAMESPACE):
     """
     The function connects to the DBs for a given namespace and
-    returns the handle 
-    
-    For voq chassis systems, the db list includes databases from 
+    returns the handle
+
+    For voq chassis systems, the db list includes databases from
     supervisor card. Avoid connecting to these databases from linecards
 
     If no namespace is provided, it will connect to the db in the
@@ -236,7 +241,9 @@ def get_all_namespaces():
     if is_multi_asic():
         for asic in range(num_asics):
             namespace = "{}{}".format(ASIC_NAME_PREFIX, asic)
-            config_db = connect_config_db_for_ns(namespace)
+            if namespace not in config_db_handle:
+                config_db_handle[namespace] = connect_config_db_for_ns(namespace)
+            config_db = config_db_handle[namespace]
 
             metadata = config_db.get_table('DEVICE_METADATA')
             if metadata['localhost']['sub_role'] == FRONTEND_ASIC_SUB_ROLE:
