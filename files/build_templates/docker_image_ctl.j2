@@ -378,6 +378,13 @@ start() {
     fi
 {%- endif %}
 {%- endif %}
+
+{%- if sonic_asic_platform == "cisco-8000" %}
+{%- if docker_container_name == "framewave-proxy" %}
+    cp /var/cache/cisco/bootstrap.yaml /etc/sonic/
+{%- endif %}
+{%- endif %}
+
 {%- if sonic_asic_platform == "mellanox" %}
     # TODO: Mellanox will remove the --tmpfs exception after SDK socket path changed in new SDK version
 {%- endif %}
@@ -413,11 +420,6 @@ start() {
 {%- if sonic_asic_platform == "broadcom" %}
 {%- if docker_container_name == "syncd" %}
         -v /var/run/docker-syncd$DEV:/var/run/sswsyncd \
-{%- endif %}
-{%- endif %}
-{%- if sonic_asic_platform == "cisco-8000" %}
-{%- if docker_container_name == "framewave-proxy" %}
-        -v /opt/cisco/bin:/opt/cisco/bin \
 {%- endif %}
 {%- endif %}
 {%- if docker_container_name == "pmon" %}
