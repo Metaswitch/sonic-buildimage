@@ -1,15 +1,15 @@
 [submodule "sonic-swss-common"]
 	path = src/sonic-swss-common
-	url = https://github.com/Azure/sonic-swss-common
+	url = git@github.com:Metaswitch/sonic-swss-common.git
 [submodule "sonic-linux-kernel"]
 	path = src/sonic-linux-kernel
 	url = https://github.com/Azure/sonic-linux-kernel
 [submodule "sonic-sairedis"]
 	path = src/sonic-sairedis
-	url = https://github.com/Azure/sonic-sairedis
+	url = git@github.com:Metaswitch/sonic-sairedis.git
 [submodule "sonic-swss"]
 	path = src/sonic-swss
-	url = https://github.com/Azure/sonic-swss
+	url = git@github.com:Metaswitch/sonic-swss.git
 [submodule "src/p4c-bm/p4c-bm"]
 	path = platform/p4/p4c-bm/p4c-bm
 	url = https://github.com/krambn/p4c-bm
@@ -30,7 +30,7 @@
 	url = https://github.com/p4lang/ptf.git
 [submodule "src/sonic-utilities"]
 	path = src/sonic-utilities
-	url = https://github.com/Azure/sonic-utilities
+	url = git@github.com:Metaswitch/sonic-utilities.git
 [submodule "platform/broadcom/sonic-platform-modules-arista"]
 	path = platform/broadcom/sonic-platform-modules-arista
 	url = https://github.com/aristanetworks/sonic
@@ -103,3 +103,12 @@
 [submodule "src/thrift_0_14_1/thrift"]
 	path = src/thrift_0_14_1/thrift
 	url = https://github.com/apache/thrift.git
+[submodule "src/framewave"]
+	path = src/framewave
+	url = git@git.datcon.co.uk:nst/icp.git
+[submodule "src/soda"]
+	path = src/soda
+	url = git@git.datcon.co.uk:nst/software-dataplane.git
+[submodule "src/swan-agent-for-sonic"]
+	path = src/swan-agent-for-sonic
+	url = git@git.datcon.co.uk:nst/swan-agent-for-sonic.git

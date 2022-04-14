@@ -28,13 +28,13 @@ IMAGE_VERSION="${SONIC_IMAGE_VERSION}"
 generate_kvm_image()
 {
     NUM_ASIC=$1
-    if [ $NUM_ASIC == 4 ]; then 
+    if [ $NUM_ASIC == 4 ]; then
          KVM_IMAGE=$OUTPUT_KVM_4ASIC_IMAGE
          RECOVERY_ISO=$onie_recovery_kvm_4asic_image
     elif [ $NUM_ASIC == 6 ]; then
          KVM_IMAGE=$OUTPUT_KVM_6ASIC_IMAGE
          RECOVERY_ISO=$onie_recovery_kvm_6asic_image
-    else 
+    else
          KVM_IMAGE=$OUTPUT_KVM_IMAGE
          RECOVERY_ISO=$onie_recovery_image
          NUM_ASIC=1
@@ -109,8 +109,6 @@ if [ "$IMAGE_TYPE" = "onie" ]; then
     mkdir -p `dirname $OUTPUT_ONIE_IMAGE`
     sudo rm -f $OUTPUT_ONIE_IMAGE
 
-    generate_device_list "./installer/$TARGET_PLATFORM/platforms_asic"
-
     generate_onie_installer_image
 
 ## Build a raw partition dump image using the ONIE installer that can be
@@ -121,8 +119,6 @@ elif [ "$IMAGE_TYPE" = "raw" ]; then
     echo "Build RAW image"
     mkdir -p `dirname $OUTPUT_RAW_IMAGE`
     sudo rm -f $OUTPUT_RAW_IMAGE
-
-    generate_device_list "./installer/$TARGET_PLATFORM/platforms_asic"
 
     generate_onie_installer_image
 
@@ -154,8 +150,6 @@ elif [ "$IMAGE_TYPE" = "raw" ]; then
     echo "The compressed raw image is in $OUTPUT_RAW_IMAGE"
 
 elif [ "$IMAGE_TYPE" = "kvm" ]; then
-
-    generate_device_list "./installer/$TARGET_PLATFORM/platforms_asic"
 
     generate_onie_installer_image
     # Generate single asic KVM image
@@ -192,9 +186,6 @@ elif [ "$IMAGE_TYPE" = "aboot" ]; then
     zip -g $OUTPUT_ABOOT_IMAGE version
     zip -g $ABOOT_BOOT_IMAGE version
     rm version
-
-    generate_device_list ".platforms_asic"
-    zip -g $OUTPUT_ABOOT_IMAGE .platforms_asic
 
     zip -g $OUTPUT_ABOOT_IMAGE $ABOOT_BOOT_IMAGE
     rm $ABOOT_BOOT_IMAGE

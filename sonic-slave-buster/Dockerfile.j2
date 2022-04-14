@@ -78,6 +78,7 @@ RUN apt-get update && apt-get install -y \
         libzmq5 \
         libzmq3-dev \
         jq \
+        ccache \
 # For quagga build
         libreadline-dev \
         texlive-latex-base \
@@ -364,13 +365,16 @@ RUN apt-get update && apt-get install -y \
         pkg-config \
 # For audisp-tacplus
         libauparse-dev \
-        auditd
+        auditd \
+        rubygems \
+        gdb
 
 # For iproute2
 RUN apt-get install -y -t buster-backports \
         libbpf-dev \
         dwz \
         debhelper
+
 
 RUN apt-get -y build-dep openssh
 
@@ -515,7 +519,7 @@ EXPOSE 22
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /usr/share/depot_tools
 ENV PATH /usr/share/depot_tools:$PATH
 
-# Install dependencies for dhcp relay test 
+# Install dependencies for dhcp relay test
 RUN pip3 install parameterized==0.8.1
 RUN pip3 install pyfakefs
 
@@ -538,10 +542,21 @@ RUN add-apt-repository \
 RUN apt-get update
 RUN apt-get install -y docker-ce=5:18.09.5~3-0~debian-buster docker-ce-cli=5:18.09.5~3-0~debian-buster
 RUN echo "DOCKER_OPTS=\"--experimental --storage-driver=vfs {{ DOCKER_EXTRA_OPTS }}\"" >> /etc/default/docker
+RUN mkdir -p /etc/docker
+COPY daemon.json /etc/docker/
 RUN update-alternatives --set iptables /usr/sbin/iptables-legacy
 
 # Install m2crypto package, needed by SWI tools
 RUN pip2 install m2crypto==0.36.0
+
+# framewave requirements
+RUN pip install srcgen
+RUN cpan install File::Util
+RUN gem install --no-ri --no-rdoc fpm
+RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
+RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | sudo tee /etc/apt/sources.list.d/sbt_old.list
+RUN curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add
+RUN apt-get update && apt-get install -y sbt
 
 # Install swi tools
 RUN pip3 install git+https://github.com/aristanetworks/swi-tools.git@bead66bf261770237f7dd21ace3774ba04a017e9

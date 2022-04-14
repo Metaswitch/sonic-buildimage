@@ -51,9 +51,9 @@ def connect_config_db_for_ns(namespace=DEFAULT_NAMESPACE):
 def connect_to_all_dbs_for_ns(namespace=DEFAULT_NAMESPACE):
     """
     The function connects to the DBs for a given namespace and
-    returns the handle 
-    
-    For voq chassis systems, the db list includes databases from 
+    returns the handle
+
+    For voq chassis systems, the db list includes databases from
     supervisor card. Avoid connecting to these databases from linecards
 
     If no namespace is provided, it will connect to the db in the
@@ -242,7 +242,7 @@ def get_all_namespaces():
         for asic in range(num_asics):
             namespace = "{}{}".format(ASIC_NAME_PREFIX, asic)
             if namespace not in config_db_handle:
-                config_db_handle[namespace] =  connect_config_db_for_ns(namespace)
+                config_db_handle[namespace] = connect_config_db_for_ns(namespace)
             config_db = config_db_handle[namespace]
 
             metadata = config_db.get_table('DEVICE_METADATA')

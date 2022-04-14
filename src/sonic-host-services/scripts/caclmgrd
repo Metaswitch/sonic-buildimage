@@ -503,6 +503,18 @@ class ControlPlaneAclManager(daemon_base.DaemonBase):
         iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "iptables -A INPUT -p tcp --dport 179 -j ACCEPT")
         iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "ip6tables -A INPUT -p tcp --dport 179 -j ACCEPT")
 
+        # Add iptables/ip6tables commands to allow all incoming LDP traffic
+        # TODO: Determine LDP ACLs based on configured device sessions, and remove this blanket acceptance
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "iptables -A INPUT -p tcp --dport 646 -j ACCEPT")
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "iptables -A INPUT -p tcp --sport 646 -j ACCEPT")
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "ip6tables -A INPUT -p tcp --dport 646 -j ACCEPT")
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "ip6tables -A INPUT -p tcp --sport 646 -j ACCEPT")
+        # UDP LDP filter rules not actually required because they use the multicast IP address and are not filtered by IP2ME rules
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "iptables -A INPUT -p udp --dport 646 -j ACCEPT")
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "iptables -A INPUT -p udp --sport 646 -j ACCEPT")
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "ip6tables -A INPUT -p udp --dport 646 -j ACCEPT")
+        iptables_cmds.append(self.iptables_cmd_ns_prefix[namespace] + "ip6tables -A INPUT -p udp --sport 646 -j ACCEPT")
+
         # Get current ACL tables and rules from Config DB
         self._tables_db_info = self.config_db_map[namespace].get_table(self.ACL_TABLE)
         self._rules_db_info = self.config_db_map[namespace].get_table(self.ACL_RULE)

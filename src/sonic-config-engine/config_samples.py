@@ -107,6 +107,15 @@ def generate_global_dualtor_tables():
                     }
     return data
 
+def generate_minimal_config(data):
+    data['DEVICE_METADATA']['localhost']['hostname'] = 'sonic'
+    data['DEVICE_METADATA']['localhost']['type'] = 'LeafRouter'
+    data['LOOPBACK_INTERFACE'] = {"Loopback0|127.1.1.1/16": {}}
+    for port in natsorted(data['PORT']):
+        data['PORT'][port]['admin_status'] = 'up'
+        data['PORT'][port]['mtu'] = '9100'
+    return data
+
 def generate_l2_config(data):
     # Check if dual ToR configs are needed
     if 'is_dualtor' in data and data['is_dualtor']:
@@ -118,7 +127,7 @@ def generate_l2_config(data):
     if 'uplinks' in data:
         uplinks = data['uplinks']
         data.pop('uplinks')
-    
+
     if 'downlinks' in data:
         downlinks = data['downlinks']
         data.pop('downlinks')
@@ -158,16 +167,19 @@ def generate_l2_config(data):
             data['VLAN_MEMBER']['Vlan1000|{}'.format(port)] = {'tagging_mode': 'untagged'}
     return data
 
+
 _sample_generators = {
         't1': generate_t1_sample_config,
         'l2': generate_l2_config,
         'empty': generate_empty_config,
         'l1': generate_l1_config,
-        'l3': generate_l3_config
+        'l3': generate_l3_config,
+        'minimal': generate_minimal_config
         }
 
 def get_available_config():
     return list(_sample_generators.keys())
+
 
 def generate_sample_config(data, setting_name):
     data = generate_common_config(data)

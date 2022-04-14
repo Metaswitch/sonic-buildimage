@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# usage:
+# package_logs:
+# Package up the logs for a container.  The specific logs packaged up for each container can be defined differently.
+
+function debug()
+{
+    /usr/bin/logger $1
+    /bin/echo `date` "- $1" >> ${DEBUGLOG}
+}
+
+package() {
+    debug "Packaging logs for ${SERVICE}${DEV} service..."
+    LOG_FILE="/var/log/${SERVICE}${DEV}_`date '+%Y%m%d%H%M'`.tgz"
+    sudo tar -czf ${LOG_FILE} /var/log/${SERVICE}/*
+    debug "Logs for ${SERVICE}${DEV} service in ${LOG_FILE}"
+}
+
+SERVICE=$1
+DEV=$2
+DEBUGLOG="/tmp/${SERVICE}${DEV}-package_logs.log"
+
+case "$1" in
+    bgp)
+        ;&
+    swan-agent)
+        ;&
+    framewave-proxy)
+        ;&
+    lldp)
+        ;&
+    teamd)
+        ;&
+    swss)
+        ;& 
+    database)
+        ;&        
+    syncd)
+        package
+        sudo usr/local/bin/generate_dump -t 5
+        ;;
+    
+    *)
+        echo "Usage: $0 {bgp, syncd, sonic-agent, lldp, framewave-proxy, teamd, swss, database}"
+        exit 1
+        ;;
+esac

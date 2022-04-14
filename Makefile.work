@@ -154,6 +154,8 @@ OVERLAY_MODULE_CHECK := \
     (echo "ERROR: Module 'overlay' not loaded. Try running 'sudo modprobe overlay'."; exit 1)
 
 BUILD_TIMESTAMP := $(shell date +%Y%m%d\.%H%M%S)
+MAKE_PATH := \$$PATH
+MAKE_ENV :=
 
 ifeq ($(DOCKER_BUILDER_MOUNT),)
 override DOCKER_BUILDER_MOUNT := "$(PWD):/sonic"
@@ -188,6 +190,20 @@ ifeq ($(SONIC_CONFIG_USE_NATIVE_DOCKERD_FOR_BUILD), y)
 ifneq ($(MULTIARCH_QEMU_ENVIRON), y)
     DOCKER_RUN += -v /var/run/docker.sock:/var/run/docker.sock
 endif
+endif
+
+ifeq ($(ENABLE_CCACHE),y)
+    MAKE_ENV += PATH=/usr/lib/ccache:\$$PATH
+    ifeq ($(CCACHE_DIR),)
+        $(info Enabling ccache support using $(HOME)/.ccache $(CCACHE_MAXSIZE))
+        DOCKER_RUN += -v /$(HOME)/.ccache:/$(HOME)/.ccache
+        MAKE_ENV += CCACHE_DIR=$(HOME)/.ccache
+    else
+        $(info Enabling ccache support using $(CCACHE_DIR) $(CCACHE_MAXSIZE))
+        DOCKER_RUN += -v $(CCACHE_DIR):$(CCACHE_DIR)
+        MAKE_ENV += CCACHE_DIR=$(CCACHE_DIR)
+    endif
+    MAKE_ENV += CCACHE_MAXSIZE=$(CCACHE_MAXSIZE) CACHE_UMASK=$(CCACHE_UMASK)
 endif
 
 ifeq ($(MULTIARCH_QEMU_ENVIRON), y)
@@ -251,7 +267,7 @@ DOCKER_BUILD = docker build --no-cache \
 	       -f $(SLAVE_DIR)/Dockerfile.user \
 	       $(SLAVE_DIR)
 
-SONIC_BUILD_INSTRUCTION :=  make \
+SONIC_BUILD_INSTRUCTION := $(MAKE_ENV) make \
                            -f slave.mk \
                            PLATFORM=$(PLATFORM) \
                            PLATFORM_ARCH=$(PLATFORM_ARCH) \
@@ -262,6 +278,8 @@ SONIC_BUILD_INSTRUCTION :=  make \
                            ENABLE_DHCP_GRAPH_SERVICE=$(ENABLE_DHCP_GRAPH_SERVICE) \
                            ENABLE_ZTP=$(ENABLE_ZTP) \
                            INCLUDE_PDE=$(INCLUDE_PDE) \
+                           ENABLE_CCACHE=$(ENABLE_CCACHE) \
+                           $(CCACHE_OPTIONS) \
                            SHUTDOWN_BGP_ON_START=$(SHUTDOWN_BGP_ON_START) \
                            INCLUDE_KUBERNETES=$(INCLUDE_KUBERNETES) \
                            KUBERNETES_VERSION=$(KUBERNETES_VERSION) \
@@ -327,12 +345,12 @@ endif
 	    $(DOCKER_BUILD) ; }
 ifeq "$(KEEP_SLAVE_ON)" "yes"
     ifdef SOURCE_FOLDER
-		@$(DOCKER_RUN) -v $(SOURCE_FOLDER):/var/$(USER)/src $(SLAVE_IMAGE):$(SLAVE_TAG) bash -c "$(SONIC_BUILD_INSTRUCTION) $@; scripts/collect_build_version_files.sh \$$?; /bin/bash"
+		$(DOCKER_RUN) -v $(SOURCE_FOLDER):/var/$(USER)/src $(SLAVE_IMAGE):$(SLAVE_TAG) bash -c "$(SONIC_BUILD_INSTRUCTION) $@; scripts/collect_build_version_files.sh \$$?; /bin/bash"
     else
-		@$(DOCKER_RUN) $(SLAVE_IMAGE):$(SLAVE_TAG) bash -c "$(SONIC_BUILD_INSTRUCTION) $@; scripts/collect_build_version_files.sh \$$?; /bin/bash"
+		$(DOCKER_RUN) $(SLAVE_IMAGE):$(SLAVE_TAG) bash -c "$(SONIC_BUILD_INSTRUCTION) $@; scripts/collect_build_version_files.sh \$$?; /bin/bash"
     endif
 else
-	@$(DOCKER_RUN) $(SLAVE_IMAGE):$(SLAVE_TAG) bash -c "$(SONIC_BUILD_INSTRUCTION) $@; scripts/collect_build_version_files.sh \$$?"
+	$(DOCKER_RUN) $(SLAVE_IMAGE):$(SLAVE_TAG) bash -c "$(SONIC_BUILD_INSTRUCTION) $@; scripts/collect_build_version_files.sh \$$?"
 endif
 
 sonic-build-hooks:

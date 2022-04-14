@@ -71,8 +71,8 @@ SONIC_USE_PDDF_FRAMEWORK = y
 
 # SONIC_ROUTING_STACK - specify the routing-stack being elected to drive SONiC's control-plane.
 # Supported routing stacks on SONiC are:
-# routing-stacks: frr.
-SONIC_ROUTING_STACK = frr
+# routing-stacks: frr, framewave.
+SONIC_ROUTING_STACK = framewave
 
 # ENABLE_SYNCD_RPC - build docker-syncd with rpc packages for testing purposes.
 # Uncomment to enable:
@@ -142,7 +142,7 @@ INCLUDE_RESTAPI = n
 INCLUDE_NAT = y
 
 # INCLUDE_DHCP_RELAY - build and install dhcp-relay package
-INCLUDE_DHCP_RELAY = y
+INCLUDE_DHCP_RELAY = n
 
 # INCLUDE_P4RT - build docker-p4rt for P4RT support
 INCLUDE_P4RT = n
