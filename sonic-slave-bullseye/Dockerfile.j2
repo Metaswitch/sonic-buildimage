@@ -351,6 +351,15 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get -y build-dep openssh
 
+# Install pip2, which is not available in the apt repository
+RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
+RUN python2 get-pip.py
+
+# Build fix for ARM64 and ARMHF /etc/debian_version
+{%- if CONFIGURED_ARCH == "armhf" or CONFIGURED_ARCH == "arm64" %}
+RUN apt upgrade -y base-files
+{%- endif %}
+
 # Build fix for ARMHF bullseye libsairedis
 {%- if CONFIGURED_ARCH == "armhf" %}
        # Install doxygen build dependency packages
@@ -427,6 +436,7 @@ RUN pip3 install \
 # https://github.com/robshakir/pyangbind/issues/232
 RUN pip3 install pyangbind==0.8.1
 RUN pip3 uninstall -y enum34
+RUN pip install enum34
 
 # For templating
 RUN pip3 install j2cli==0.3.10
