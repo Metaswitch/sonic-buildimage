@@ -529,6 +529,7 @@ RUN pip2 install m2crypto==0.36.0
 
 # framewave requirements
 RUN pip install srcgen
+RUN pip3 install srcgen
 RUN cpan install File::Util
 RUN gem install --no-ri --no-rdoc fpm
 RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | sudo tee /etc/apt/sources.list.d/sbt.list
