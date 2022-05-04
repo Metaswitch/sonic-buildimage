@@ -99,7 +99,7 @@
 	url = https://github.com/Azure/sonic-linkmgrd.git
 [submodule "src/framewave"]
 	path = src/framewave
-	url = git@git.datcon.co.uk:nst/icp.git
+	url = git@ssh.dev.azure.com:v3/msazuredev/AzureForOperators/framewave
 [submodule "src/soda"]
 	path = src/soda
 	url = git@git.datcon.co.uk:nst/software-dataplane.git
