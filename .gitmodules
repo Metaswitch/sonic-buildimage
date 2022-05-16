@@ -102,7 +102,7 @@
 	url = git@ssh.dev.azure.com:v3/msazuredev/AzureForOperators/framewave
 [submodule "src/soda"]
 	path = src/soda
-	url = git@git.datcon.co.uk:nst/software-dataplane.git
+	url = git@ssh.dev.azure.com:v3/msazuredev/AzureForOperators/soda
 [submodule "src/swan-agent-for-sonic"]
 	path = src/swan-agent-for-sonic
 	url = git@git.datcon.co.uk:nst/swan-agent-for-sonic.git
